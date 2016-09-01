@@ -1,11 +1,11 @@
-# elm-webpack-starter
+# Elm & Express Webpack Starter
+Fork of [elm-webpack-starter](https://github.com/moarwick/elm-webpack-starter) with added Express server and integrated webpack's dev server & HMR.
+## Work in progress!
 
 A simple Webpack setup for writing [Elm](http://elm-lang.org/) apps:
 
-* Dev server with live reloading, HMR
+* Express dev server with live reloading and hot reload (HMR)
 * Support for CSS/SCSS (with Autoprefixer), image assets
-* Bootstrap 3.3+ (Sass version)
-* Bundling and minification for deployment
 * Basic app scaffold, using `Html.App`
 * A snippet of example code to get you started!
 

@@ -6,17 +6,18 @@ var autoprefixer      = require( 'autoprefixer' );
 var ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
 var CopyWebpackPlugin = require( 'copy-webpack-plugin' );
 
-console.log( 'WEBPACK GO!');
-
 // detemine build env
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'development';
+
+isDebug = TARGET_ENV === 'development';
 
 // common webpack config
 var commonConfig = {
 
   output: {
-    path:       path.resolve( __dirname, 'dist/' ),
-    filename: '[hash].js',
+    path:  '/', //     path.resolve( __dirname, 'dist/' ),
+    publicPath: '/',
+    filename: 'bundle.js',
   },
 
   resolve: {
@@ -39,7 +40,8 @@ var commonConfig = {
       template: 'src/static/index.html',
       inject:   'body',
       filename: 'index.html'
-    })
+    }),
+    new webpack.HotModuleReplacementPlugin(),
   ],
 
   postcss: [ autoprefixer( { browsers: ['last 2 versions'] } ) ],
@@ -53,7 +55,9 @@ if ( TARGET_ENV === 'development' ) {
   module.exports = merge( commonConfig, {
 
     entry: [
-      'webpack-dev-server/client?http://localhost:8080',
+      // 'webpack-dev-server/client?http://localhost:8080',
+      'webpack/hot/dev-server',
+      'webpack-hot-middleware/client',
       path.join( __dirname, 'src/static/index.js' )
     ],
 
