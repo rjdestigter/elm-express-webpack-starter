@@ -21,13 +21,13 @@ var commonConfig = {
   },
 
   resolve: {
-    modulesDirectories: ['node_modules'],
-    extensions:         ['', '.js', '.elm']
+    modules: ['node_modules'],
+    extensions: ['.js', '.elm']
   },
 
   module: {
     noParse: /\.elm$/,
-    loaders: [
+    rules: [
       {
         test: /\.(eot|ttf|woff|woff2|svg)$/,
         loader: 'file-loader'
@@ -42,10 +42,15 @@ var commonConfig = {
       filename: 'index.html'
     }),
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false,
+      options: {
+        context: __dirname,
+        postcss: [ autoprefixer( { browsers: ['last 2 versions'] } ) ],
+      },
+    })
   ],
-
-  postcss: [ autoprefixer( { browsers: ['last 2 versions'] } ) ],
-
 }
 
 // additional webpack settings for local env (when invoked by 'npm start')
@@ -67,24 +72,20 @@ if ( TARGET_ENV === 'development' ) {
     },
 
     module: {
-      loaders: [
-        {
-          test:    /\.elm$/,
-          exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-hot!elm-webpack?verbose=true&warn=true'
-        },
-        {
-          test: /\.(css|scss)$/,
-          loaders: [
-            'style-loader',
-            'css-loader',
-            'postcss-loader',
-            'sass-loader'
-          ]
-        }
-      ]
+      rules: [{
+        test:    /\.elm$/,
+        exclude: [/elm-stuff/, /node_modules/],
+        loader:  'elm-hot-loader!elm-webpack-loader?verbose=true&warn=true'
+      }, {
+        test: /\.(css|scss)$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'postcss-loader',
+          'sass-loader'
+        ]
+      }]
     }
-
   });
 }
 
@@ -97,11 +98,11 @@ if ( TARGET_ENV === 'production' ) {
     entry: path.join( __dirname, 'src/static/index.js' ),
 
     module: {
-      loaders: [
+      rules: [
         {
           test:    /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-webpack'
+          loader:  'elm-webpack-loader'
         },
         {
           test: /\.(css|scss)$/,
@@ -125,10 +126,11 @@ if ( TARGET_ENV === 'production' ) {
         },
       ]),
 
-      new webpack.optimize.OccurenceOrderPlugin(),
-
       // extract CSS into a separate file
-      new ExtractTextPlugin( './[hash].css', { allChunks: true } ),
+      new ExtractTextPlugin({
+        filename: './[hash].css',
+        allChunks: true
+      }),
 
       // minify & mangle JS/CSS
       new webpack.optimize.UglifyJsPlugin({

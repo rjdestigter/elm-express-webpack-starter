@@ -13,7 +13,14 @@ var app = express();
 
 
 var config = require('../webpack.config');
-var compiler = webpack(config);
+
+let compiler
+
+try {
+    compiler = webpack(config);
+} catch (error) {
+    console.error(error)
+}
 
 
 app.use(express.static(path.join(__dirname, '../src/static/assets')));

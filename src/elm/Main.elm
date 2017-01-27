@@ -1,34 +1,46 @@
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.App as Html
 import Html.Events exposing ( onClick )
 
 -- component import example
 import Components.Hello exposing ( hello )
 
 
--- APP
-main : Program Never
+-- MAIN
+main : Program Never Model Msg
 main =
-  Html.beginnerProgram { model = model, view = view, update = update }
+    program
+        { init = init
+        , view = view
+        , update =update
+        , subscriptions = subscriptions
+        }
 
+-- INIT
+init : ( Model, Cmd Msg )
+init =
+    ( model, Cmd.none )
 
 -- MODEL
 type alias Model = Int
 
-model : number
+model : Model
 model = 0
 
 
 -- UPDATE
 type Msg = NoOp | Increment
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp -> model
-    Increment -> model + 1
+    NoOp -> (model, Cmd.none)
+    Increment -> (model + 1, Cmd.none)
 
+-- SUBSCRIPTIONS
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 -- VIEW
 -- Html is defined as: elem [ attribs ][ children ]
@@ -41,7 +53,7 @@ view model =
         div [ class "jumbotron" ][
           img [ src "/img/elm.jpg", style styles.img ] []                                    -- inline CSS (via var)
           , hello model                                                                     -- ext 'hello' component (takes 'model' as arg)
-          , p [] [ text ( "Elm Webpack Starter" ) ]
+          , p [] [ text ( "Elm Webpack 2 Starter" ) ]
           , button [ class "btn btn-primary btn-lg", onClick Increment ] [                  -- click handler
             span[ class "glyphicon glyphicon-star" ][]                                      -- glyphicon
             , span[][ text "FTW Yeah!" ]
